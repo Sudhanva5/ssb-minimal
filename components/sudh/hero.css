@@ -1,0 +1,344 @@
+/* /minimal-sudh: the countdown strip above the nav, and the hero: the campus
+   film full width, the words in the column, the form over the film's right.
+   Scoped to the page (.sx); CSS is global. */
+
+/* ---- Countdown strip ----------------------------------------------------------- */
+
+.sx .hx-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-2) var(--space-gutter);
+  background: #068852;
+  color: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  text-align: center;
+}
+.sx .hx-bar-time {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.sx .hx-bar-time b {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.sx .hx-bar-dot {
+  opacity: 0.6;
+}
+
+/* ---- The hero ------------------------------------------------------------------ */
+
+.sx .hx {
+  padding-top: var(--space-4);
+}
+
+/* The hero's own column, the words at its foot on a solid ground; the film fills the stage's top. */
+.sx .hx-card {
+  --hx-inset: var(--space-4);
+  /* The stage and the veil run from here out to 16px off each edge of the screen. */
+  --hx-left: calc(var(--hx-inset) - max(0px, (100vw - var(--site-content-max)) / 2) - var(--space-gutter));
+  --hx-width: calc(100vw - 2 * var(--hx-inset));
+  /* The solid ground under the words, and how much of the stage the film covers from the top. */
+  --hx-ground: #3e5447;
+  --hx-media-h: 54%;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: max(36rem, calc(100svh - 7.5rem));
+  color: #fff;
+}
+
+.sx .hx-stage {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--hx-left);
+  z-index: -1;
+  width: var(--hx-width);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--hx-ground);
+}
+
+/* The film: the top of the stage, its foot melting into the ground. */
+.sx .hx-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hx-media-h);
+  object-fit: cover;
+  object-position: 50% 45%;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 22%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 22%);
+}
+
+/* The words, then the firms. */
+.sx .hx-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-5) var(--space-10);
+}
+
+/* The veil: full width like the stage, from --hx-fade above the words to the
+   film's foot. Over the stage, under the words (same stacking context). */
+.sx .hx-veil {
+  position: absolute;
+  top: calc(-1 * var(--hx-fade, 3.5rem));
+  bottom: 0;
+  left: var(--hx-left);
+  z-index: -1;
+  width: var(--hx-width);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  /* No clip-path, filter, opacity or mask here: any of them would make the
+     veil the blurs' backdrop root, and they would blur nothing. The layers
+     round their own corners instead. */
+}
+/* One layer of the frost (Hero.tsx sets --blur, --solid, --clear): solid out to
+   --solid, gone by --clear. --hx-shape picks the gradient: up from the foot on a
+   phone, a curve from the bottom-left corner on desktop. */
+.sx .hx-blur {
+  --hx-shape: linear-gradient(to top, #000 var(--solid), transparent var(--clear));
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  -webkit-mask-image: var(--hx-shape);
+  mask-image: var(--hx-shape);
+}
+/* The ground's colour, solid behind the words and thinning upward into the frost. */
+.sx .hx-tint {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    to top,
+    var(--hx-ground) 0%,
+    var(--hx-ground) 42%,
+    color-mix(in oklab, var(--hx-ground) 74%, transparent) 58%,
+    color-mix(in oklab, var(--hx-ground) 46%, transparent) 76%,
+    color-mix(in oklab, var(--hx-ground) 16%, transparent) 91%,
+    transparent 100%
+  );
+}
+
+.sx .hx-kicker {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: var(--font-weight-medium);
+  color: rgb(255 255 255 / 0.92);
+}
+.sx .hx-title {
+  margin: var(--space-3) 0 0;
+  max-width: 18ch;
+  font-size: clamp(2rem, 6.4cqw, 3.25rem);
+  line-height: 1.08;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.sx .hx-sub {
+  margin: var(--space-4) 0 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: rgb(255 255 255 / 0.9);
+}
+.sx .hx-sub > span:not(.sr-only) {
+  white-space: nowrap;
+}
+.sx .hx-sub-dot {
+  margin-inline: var(--space-3);
+  opacity: 0.7;
+}
+/* Narrow: one phrase a line, no dot. */
+@container (width < 36rem) {
+  .sx .hx-sub > span:not(.sr-only, .hx-sub-dot) {
+    display: block;
+  }
+  .sx .hx-sub-dot {
+    display: none;
+  }
+}
+
+/* The three facts in a glass box, hairlines between. */
+.sx .hx-facts {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-6) 0 0;
+  padding: var(--space-3) 0;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 0.08);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+.sx .hx-fact {
+  display: grid;
+  gap: 2px;
+  padding-inline: var(--space-5);
+}
+.sx .hx-fact + .hx-fact {
+  border-left: 1px solid rgb(255 255 255 / 0.3);
+}
+.sx .hx-fact dt {
+  font-size: 1.125rem;
+  line-height: 1.25;
+  font-weight: var(--font-weight-medium);
+}
+.sx .hx-fact dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  color: rgb(255 255 255 / 0.8);
+}
+
+/* Narrow: the facts box spans the column in three equal parts, each on one line. */
+@container (width < 36rem) {
+  .sx .hx-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+  .sx .hx-fact {
+    padding-inline: var(--space-3);
+    white-space: nowrap;
+  }
+  .sx .hx-fact dt {
+    font-size: 1rem;
+  }
+  .sx .hx-fact dd {
+    font-size: 0.75rem;
+  }
+}
+
+/* ---- Firms ----------------------------------------------------------------------- */
+
+.sx .hx-proof {
+  max-width: 30rem;
+}
+
+.sx .hx-leaders-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-3);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-medium);
+  color: rgb(255 255 255 / 0.88);
+}
+.sx .hx-leaders-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgb(255 255 255 / 0.3);
+}
+
+.sx .hx-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx .hx-tile {
+  display: grid;
+  place-items: center;
+  /* overflow keeps a tall mark (Airtel) from stretching its tile past 8:5. */
+  min-height: 0;
+  overflow: hidden;
+  aspect-ratio: 8 / 5;
+  padding: 18% 14%;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+.sx .hx-tile img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+/* ---- Wider: the hero's own column ------------------------------------------------ */
+
+@container (min-width: 36rem) {
+  .sx .hx-body {
+    padding: var(--space-8) var(--space-10) var(--space-16);
+  }
+  .sx .hx-kicker,
+  .sx .hx-sub {
+    font-size: 1.125rem;
+  }
+  .sx .hx-fact {
+    padding-inline: var(--space-6);
+  }
+  .sx .hx-fact dt {
+    font-size: 1.25rem;
+  }
+  .sx .hx-fact dd {
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop: the words at the foot of the stage's left, the form over its right. */
+@media (min-width: 1056px) {
+  .sx .hx-card {
+    --hx-media-h: 74%;
+    min-height: var(--hx-h);
+  }
+  .sx .hx-body {
+    padding: var(--space-8) 0 var(--hx-foot) var(--space-6);
+  }
+
+  /* The film fills the stage; the frost and ground are an ellipse anchored at
+     the bottom-left corner, reaching up the left edge and out to about 85%
+     along the foot, so the film stays clear behind the form's right side. */
+  .sx .hx-card {
+    --hx-media-h: 100%;
+    /* Reaches ~80% up the left edge, so the curve starts a little below the top. */
+    --hx-ellipse: ellipse 86% 82% at 0% 100%;
+  }
+  .sx .hx-media {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* The veil spans the whole stage: the body steps aside as its containing block. */
+  .sx .hx-body {
+    position: static;
+  }
+  .sx .hx-veil {
+    top: 0;
+    border-radius: var(--radius-lg);
+  }
+  .sx .hx-blur {
+    --hx-shape: radial-gradient(var(--hx-ellipse), #000 var(--solid), transparent var(--clear));
+  }
+  .sx .hx-tint {
+    background: radial-gradient(
+      var(--hx-ellipse),
+      var(--hx-ground) 0%,
+      var(--hx-ground) 34%,
+      color-mix(in oklab, var(--hx-ground) 80%, transparent) 52%,
+      color-mix(in oklab, var(--hx-ground) 52%, transparent) 70%,
+      color-mix(in oklab, var(--hx-ground) 20%, transparent) 86%,
+      transparent 100%
+    );
+  }
+}

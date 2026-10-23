@@ -1,0 +1,281 @@
+/* /minimal-sudh: v3's "Placement Highlights." — the cohort photo with the glass
+   stats strip and the press clip, then the visiting-companies logo wall.
+   Also holds the entrance shared with alumni.css (#placement, #alumni). */
+
+/* ---- v3's page-wide token choices, kept to these two sections ---------------
+   A brighter brand green for eyebrows, medium-weight display headings, and a
+   body-size lede under a display heading. */
+.sx :is(#placement, #alumni) {
+  --content-brand: var(--color-ssb-light-9);
+  --type-display-weight: var(--font-weight-medium);
+}
+.sx :is(#placement, #alumni) .type-display + .type-body-lg {
+  font-size: var(--type-body-size);
+  line-height: 1.6;
+}
+
+/* ---- Entrance ----------------------------------------------------------------
+   Eyebrow, headline line and lede rise in once the header is a quarter of the
+   way up the screen (placementMotion.tsx sets data-shown); blocks rise on their
+   own. Hidden only once JS has marked the page. */
+.sx :is(#placement, #alumni) .enter-mask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+.sx :is(#placement, #alumni) .enter-mask > span {
+  display: block;
+}
+
+.js .sx :is(#placement, #alumni) [data-enter='eyebrow'] {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.js .sx :is(#placement, #alumni) [data-enter='headline'] .enter-mask > span {
+  transform: translateY(110%);
+}
+.js .sx :is(#placement, #alumni) [data-enter='sub'],
+.js .sx :is(#placement, #alumni) [data-enter='block'] {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+.js .sx :is(#placement, #alumni) [data-shown] [data-enter='eyebrow'],
+.js .sx :is(#placement, #alumni) [data-shown] [data-enter='sub'],
+.js .sx :is(#placement, #alumni) [data-enter='block'][data-shown] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.js .sx :is(#placement, #alumni) [data-shown] [data-enter='headline'] .enter-mask > span {
+  transform: none;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
+}
+.js .sx :is(#placement, #alumni) [data-shown] [data-enter='sub'] {
+  transition-delay: 0.25s;
+}
+.js .sx :is(#placement, #alumni) [data-enter='block'][data-shown] {
+  transition-duration: 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .sx :is(#placement, #alumni) :is([data-enter='eyebrow'], [data-enter='sub'], [data-enter='block']),
+  .js .sx :is(#placement, #alumni) [data-enter='headline'] .enter-mask > span {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---- Header ------------------------------------------------------------------ */
+.sx .pl-header-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.sx .pl-header-grid > [data-enter='sub'] {
+  max-width: var(--size-panel-2xl);
+}
+
+/* ---- The cohort card ------------------------------------------------------------
+   The photo fills the card, the four stats in a glass strip along its bottom. */
+.sx .pl-merge {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 21rem;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  color: #fff;
+  overflow: hidden;
+}
+
+.sx .pl-merge-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgb(43 51 64);
+}
+.sx .pl-merge-bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Clear through the faces, dark under the stats. */
+.sx .pl-merge-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgb(10 14 20 / 0.1) 0%, rgb(10 14 20 / 0.06) 45%, rgb(10 14 20 / 0.72) 100%);
+}
+
+/* The glass strip: two by two on a phone, one row of four from 30rem. */
+.sx .pl-merge-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+  margin: 0;
+  padding: var(--space-4);
+  border: var(--border-width-hair) solid rgb(255 255 255 / 0.2);
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(0.75);
+}
+.sx .pl-merge-stat {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.sx .pl-merge-stats dd {
+  order: -1;
+  margin: 0;
+  font-size: 1.625rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sx .pl-merge-stats dt {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--on-image-ink-secondary);
+}
+.sx .pl-merge-tail {
+  display: block;
+}
+
+/* ---- The press clip ------------------------------------------------------------
+   v3's white card under the photo: on a phone the photo sits on top; from
+   30rem it takes the left of the card, the story and the download the right. */
+.sx .pl-clip {
+  margin-top: var(--space-4);
+}
+.sx .pl-clip-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.sx .pl-clip-photo {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-surface-sunken);
+}
+.sx .pl-clip-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sx .pl-clip-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+.sx .pl-clip-dateline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.sx .pl-clip-headline {
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-lh);
+  font-weight: var(--type-h3-weight);
+  letter-spacing: var(--type-h3-tracking);
+  text-wrap: balance;
+}
+.sx .pl-clip-headline a {
+  color: inherit;
+  text-decoration: none;
+}
+.sx .pl-clip-headline a:hover {
+  text-decoration: underline 1px;
+  text-underline-offset: 0.12em;
+}
+.sx .pl-clip-headline a:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.sx .pl-clip-rule {
+  margin-block: var(--space-2);
+}
+/* The download sits with the story, under the opening lines. */
+.sx .pl-clip-cta {
+  width: 100%;
+  margin-top: var(--space-3);
+}
+
+.sx .pl-v3-peers {
+  margin-block: var(--space-10);
+}
+
+/* ---- Wider: the section's own width, not the screen's ---------------------- */
+@container (min-width: 30rem) {
+  .sx .pl-merge {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    padding: var(--space-6);
+  }
+  /* One row of four, hairlines between. */
+  .sx .pl-merge-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding: var(--space-4) 0;
+  }
+  .sx .pl-merge-stat {
+    padding-inline: clamp(0.75rem, 2.4cqw, 1.25rem);
+  }
+  .sx .pl-merge-stat + .pl-merge-stat {
+    border-left: var(--border-width-hair) solid rgb(255 255 255 / 0.22);
+  }
+  .sx .pl-merge-stats dd {
+    font-size: clamp(1.25rem, 4.4cqw, 2rem);
+  }
+  .sx .pl-merge-stats dt {
+    font-size: clamp(0.6875rem, 1.9cqw, 0.8125rem);
+  }
+
+  .sx .pl-clip-main {
+    grid-template-columns: 42% minmax(0, 1fr);
+  }
+  .sx .pl-clip-photo {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+  .sx .pl-clip-body {
+    justify-content: center;
+    padding: var(--space-6);
+  }
+  .sx .pl-clip-cta {
+    align-self: flex-start;
+    width: auto;
+  }
+}
+
+@container (min-width: 42rem) {
+  .sx .pl-header-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-10);
+  }
+  .sx .pl-header-grid > * {
+    grid-column: 1;
+  }
+  .sx .pl-v3-peers {
+    margin-block: var(--space-12);
+  }
+}
+
+/* Full width (the column collapses below a 1056px screen): a wider, shorter photo. */
+@container (min-width: 56rem) {
+  .sx .pl-merge {
+    aspect-ratio: 21 / 9;
+  }
+}

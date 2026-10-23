@@ -1,0 +1,716 @@
+@import 'tailwindcss';
+@import '@kishanscaler/ssx-ui/styles.css';
+
+/* The site's content measure: 1200px of content, plus the gutter on each side. */
+:root {
+  --site-content-max: calc(75rem + 2 * var(--space-gutter));
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Anchor jumps land below the sticky header. */
+  scroll-padding-top: var(--space-20);
+}
+
+body {
+  overflow-x: clip;
+}
+
+/* The image placeholder's hatch. Token colours only, so it follows brand and theme. */
+.img-placeholder {
+  background-color: var(--color-surface-sunken);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 var(--space-3),
+    color-mix(in oklab, var(--color-border-decorative) 60%, transparent) var(--space-3) calc(var(--space-3) + 1px)
+  );
+}
+
+/* The left column's full-bleed escape hatch: an absolutely positioned layer
+   that spans the viewport from inside the two-column grid. */
+.bleed-abs {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * (max(0px, (100vw - var(--site-content-max)) / 2) + var(--space-gutter)));
+  width: 100vw;
+  max-width: none; /* preflight caps svg at 100% of the column */
+}
+
+/* ---- Motion (after the v4 concept site) ------------------------------------
+   Entrance: fade-up (with a soft de-blur), line rise, and a clip-path wipe on
+   image tiles with the photo settling inside. Scroll: `.reveal` elements fade up
+   when they enter (RevealObserver adds `.in`). `--d` staggers, in seconds.
+   Everything is off under prefers-reduced-motion. */
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes ssb-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes ssb-rise {
+  from {
+    transform: translateY(110%) rotate(2deg);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes ssb-wipe-in {
+  from {
+    clip-path: inset(0 0 0 100% round var(--tile-r, 22px));
+  }
+  to {
+    clip-path: inset(0 round var(--tile-r, 22px));
+  }
+}
+@keyframes ssb-settle {
+  from {
+    transform: scale(1.18);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes ssb-wipe-up {
+  to {
+    transform: translateY(-101%);
+  }
+}
+@keyframes ssb-scroll-x {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes ssb-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-ssb-dark-11) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.anim-fade {
+  animation: ssb-fade-up 1s var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 1s);
+}
+
+/* A headline line: the mask, and the text that rises into it. */
+.anim-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.anim-line > span {
+  display: block;
+  animation: ssb-rise 1.25s var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 1s);
+}
+
+.anim-tile {
+  animation: ssb-wipe-in 1.5s var(--ease-io) both;
+  animation-delay: calc(var(--d, 0) * 1s);
+}
+.anim-tile .anim-settle {
+  animation: ssb-settle 2s var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 1s + 0.2s);
+}
+
+.anim-marquee {
+  animation: ssb-scroll-x 46s linear infinite;
+}
+.anim-marquee:hover {
+  animation-play-state: paused;
+}
+
+.anim-pulse {
+  animation: ssb-pulse 2.4s var(--ease-out) infinite;
+}
+
+
+/* Scroll reveal. Only hidden once JS has marked the page, so content never
+   stays invisible without it. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 0.9s var(--ease-out),
+    filter 0.9s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 1s);
+}
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.js .reveal-tile {
+  clip-path: inset(0 0 0 100% round var(--tile-r, 22px));
+  transition: clip-path 1.4s var(--ease-io);
+  transition-delay: calc(var(--d, 0) * 1s);
+}
+.js .reveal-tile .anim-settle {
+  transform: scale(1.18);
+  transition: transform 2s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 1s + 0.2s);
+}
+.js .reveal-tile.in {
+  clip-path: inset(0 round var(--tile-r, 22px));
+}
+.js .reveal-tile.in .anim-settle {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade,
+  .anim-line > span,
+  .anim-tile,
+  .anim-tile .anim-settle,
+  .anim-marquee,
+  .anim-pulse {
+    animation: none !important;
+  }
+  .js .reveal,
+  .js .reveal-tile,
+  .js .reveal-tile .anim-settle {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: none;
+    transition: none;
+  }
+}
+
+/* A full-bleed photo easing down from a slight zoom on load. */
+.anim-zoom {
+  animation: ssb-settle 2.4s var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 1s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-zoom {
+    animation: none !important;
+  }
+}
+
+/* Cards sit on the white page as a flat, faint fill: no shadow, no outline.
+   Unlayered, so it beats the `bg-surface` utility the cards also carry. */
+.card-surface {
+  background-color: var(--color-surface-subtle);
+}
+
+/* Card entrance (people cards): a staggered slide-up. The card rises and
+   fades in, the photo settles, and the copy follows a beat later.
+   `.reveal-card` waits for RevealObserver's `.in` (on scroll); `.anim-slide-up`
+   plays at once (cards that mount on a tab switch). */
+.js .reveal-card {
+  opacity: 0;
+  transform: translateY(56px);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 1s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 1s);
+}
+.js .reveal-card .card-photo {
+  transform: scale(1.12);
+  transition: transform 1.6s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 1s);
+}
+.js .reveal-card .card-copy {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.9s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 1s + 0.3s);
+}
+.js .reveal-card.in {
+  opacity: 1;
+  transform: none;
+}
+.js .reveal-card.in .card-photo,
+.js .reveal-card.in .card-copy {
+  opacity: 1;
+  transform: none;
+}
+@keyframes ssb-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-slide-up {
+  animation: ssb-slide-up 0.9s var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 1s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal-card,
+  .js .reveal-card .card-photo,
+  .js .reveal-card .card-copy {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .anim-slide-up {
+    animation: none;
+  }
+}
+
+/* ---- Premium interactions ------------------------------------------------- */
+
+/* Headlines rise in word by word. Each word is a mask (.w) with the text (span) inside. */
+.reveal-words .w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.reveal-words .w > span {
+  display: inline-block;
+}
+.js .reveal-words .w > span {
+  transform: translateY(105%);
+  transition: transform 0.9s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 0.045s);
+}
+.js .reveal-words.in .w > span {
+  transform: none;
+}
+
+/* A rule that draws itself left to right. */
+.js .reveal-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.4s var(--ease-io);
+  transition-delay: calc(var(--d, 0) * 1s);
+}
+.js .reveal-line.in {
+  transform: none;
+}
+
+/* Parallax: the runtime sets --py. */
+[data-parallax] {
+  transform: translate3d(0, var(--py, 0px), 0) scale(var(--ps, 1));
+  will-change: transform;
+}
+
+/* Tilt toward the pointer: the runtime sets --rx / --ry. */
+[data-tilt] {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s var(--ease-out);
+  transform-style: preserve-3d;
+}
+
+/* A soft light under the pointer. */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate;
+}
+[data-spotlight]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--color-action-primary) 9%, transparent),
+    transparent 60%
+  );
+}
+[data-spotlight]:hover::after {
+  opacity: 1;
+}
+
+/* Type that fills with colour as it scrolls through: the runtime sets --fill. */
+.fill-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-content) 0%,
+    var(--color-content) calc(var(--fill, 0) * 100%),
+    var(--color-border-decorative) calc(var(--fill, 0) * 100%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Marquee, reversed. */
+.anim-marquee-rev {
+  animation: ssb-scroll-x 52s linear infinite reverse;
+}
+.anim-marquee-rev:hover {
+  animation-play-state: paused;
+}
+
+/* Logos that wake to full colour on hover. */
+.logo-mono {
+  filter: grayscale(1);
+  opacity: 0.55;
+  transition:
+    filter 0.5s var(--ease-out),
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+.logo-mono:hover {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal-words .w > span,
+  .js .reveal-line {
+    transform: none;
+    transition: none;
+  }
+  [data-parallax],
+  [data-tilt] {
+    transform: none;
+  }
+  .anim-marquee-rev {
+    animation: none;
+  }
+}
+
+/* ---- /premium ---------------------------------------------------------------
+   One typeface (Plus Jakarta Sans, roman + italic). Ivory ground, deep-green ink.
+   Scoped to .pm so the other variants are untouched. */
+.pm {
+  --font-family-sans: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --pm-ivory: #fbfdfb;
+  --pm-paper: #f2f8f4;
+  --pm-ink: #002e17;
+  --pm-ink-2: #45604f;
+  --pm-ink-3: #85998c;
+  --pm-line: #e0efe5;
+  --pm-green: #006e3a;
+  --pm-green-2: #1d925b;
+  --pm-lime: #bfe8ce;
+  --pm-mint: #eaf5ee;
+  background: var(--pm-ivory);
+  color: var(--pm-ink);
+  font-family: var(--font-family-sans);
+  letter-spacing: -0.015em;
+}
+.pm ::selection {
+  background: var(--pm-lime);
+  color: var(--pm-ink);
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.pm .it {
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+}
+.pm .kicker {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.pm .display {
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+}
+.pm .h2 {
+  font-size: clamp(2.25rem, 5.4cqw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+}
+/* The content stage is a size container, so type can scale with it (cqw). */
+.pm .stage {
+  container-type: inline-size;
+}
+.pm .pad {
+  --pad: clamp(1rem, 4.5cqw, 4rem);
+  padding-inline: var(--pad);
+}
+
+/* Film grain over everything (static SVG noise, very faint). */
+.pm .grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: pm-grain 1.2s steps(6) infinite;
+}
+@keyframes pm-grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Custom cursor: a dot, and a ring that swells and carries a label. */
+.pm-cursor,
+.pm-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  border-radius: 999px;
+}
+.pm-cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--pm-ink);
+}
+.pm-cursor {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(10 28 19 / 0.35);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pm-ink);
+  transition:
+    width 0.45s var(--ease-out),
+    height 0.45s var(--ease-out),
+    margin 0.45s var(--ease-out),
+    background-color 0.45s var(--ease-out),
+    border-color 0.45s var(--ease-out),
+    opacity 0.3s;
+}
+.pm-cursor[data-state='hover'] {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: rgb(200 241 105 / 0.35);
+  border-color: transparent;
+}
+.pm-cursor[data-state='label'] {
+  width: 96px;
+  height: 96px;
+  margin: -48px 0 0 -48px;
+  background: var(--pm-lime);
+  border-color: transparent;
+}
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .pm-cursor,
+  .pm-cursor-dot {
+    display: none;
+  }
+}
+@media (pointer: fine) {
+  .pm.has-cursor,
+  .pm.has-cursor a,
+  .pm.has-cursor button {
+    cursor: none;
+  }
+}
+
+/* Pill buttons: the arrow slides through on hover. */
+.pm .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 999px;
+  padding: 0.375rem 0.375rem 0.375rem 1.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.4s var(--ease-out),
+    color 0.4s var(--ease-out);
+}
+.pm .pill-dark {
+  background: var(--pm-ink);
+  color: var(--pm-ivory);
+}
+.pm .pill-dark:hover {
+  background: var(--pm-green);
+}
+.pm .pill-light {
+  background: #fff;
+  color: var(--pm-ink);
+  box-shadow: inset 0 0 0 1px var(--pm-line);
+}
+.pm .pill-light:hover {
+  background: var(--pm-lime);
+}
+.pm .pill .knob {
+  position: relative;
+  display: flex;
+  width: 2.375rem;
+  height: 2.375rem;
+  overflow: hidden;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+}
+.pm .pill-dark .knob {
+  background: var(--pm-lime);
+  color: var(--pm-ink);
+}
+.pm .pill-light .knob {
+  background: var(--pm-ink);
+  color: var(--pm-ivory);
+}
+.pm .pill .knob svg {
+  transition: transform 0.45s var(--ease-out);
+}
+.pm .pill .knob svg + svg {
+  position: absolute;
+  transform: translateX(-180%);
+}
+.pm .pill:hover .knob svg:first-child {
+  transform: translateX(180%);
+}
+.pm .pill:hover .knob svg + svg {
+  transform: none;
+}
+.pm .ulink {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.45s var(--ease-out);
+  text-decoration: none;
+}
+.pm .ulink:hover {
+  background-size: 100% 1px;
+}
+/* Rolling odometer digits. */
+.pm .odo {
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1;
+}
+.pm .odo-col {
+  display: inline-flex;
+  flex-direction: column;
+}
+.pm .odo-col > span {
+  display: block;
+  height: 1em;
+}
+.pm .rail-flash {
+  animation: pm-flash 1.4s var(--ease-out);
+}
+@keyframes pm-flash {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  30% { box-shadow: 0 0 0 6px var(--pm-lime); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm .grain {
+    animation: none;
+  }
+}
+
+/* Words that ink in one by one as the block scrolls through (runtime sets --fill on [data-fill]). */
+.pm .ink-words .iw {
+  opacity: calc(0.14 + 0.86 * clamp(0, var(--fill, 0) * var(--n) * 1.25 - var(--i), 1));
+  transition: opacity 0.2s linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm .ink-words .iw {
+    opacity: 1;
+  }
+}
+/* SplitText's per-letter masks: room for descenders (g, y) below the tight line height. */
+.pm [data-text] > * {
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+/* Premium hero ---------------------------------------------------------------- */
+/* Slow green sheen across the key phrase. */
+.pm .sheen {
+  background: linear-gradient(100deg, var(--pm-green) 0%, var(--pm-green) 40%, #44af76 50%, var(--pm-green) 60%, var(--pm-green) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pm-sheen 6s ease-in-out infinite;
+}
+@keyframes pm-sheen {
+  0% { background-position: 100% 0; }
+  60%, 100% { background-position: -50% 0; }
+}
+/* Diagonal light streaks drifting down-left, like v4's ground. */
+.pm .hero-streaks line {
+  stroke: rgb(29 146 91 / 0.14);
+  stroke-width: 1;
+  stroke-dasharray: 220 900;
+  animation: pm-streak 14s linear infinite;
+}
+.pm .hero-streaks line:nth-child(odd) {
+  stroke: rgb(255 255 255 / 0.9);
+  stroke-width: 1.5;
+}
+@keyframes pm-streak {
+  to { stroke-dashoffset: -1120; }
+}
+/* Employer marquee fades at both ends. */
+.pm .logo-run {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+@keyframes pm-run {
+  to { transform: translateX(-50%); }
+}
+/* Stat cards: a snapping rail on small screens; on desktop a row whose
+   hovered card widens. */
+.pm .hero-card {
+  height: clamp(19rem, 26cqw, 22rem);
+  flex: 0 0 78%;
+  scroll-snap-align: start;
+  transition: flex-grow 0.8s var(--ease-out);
+}
+@media (min-width: 640px) {
+  .pm .hero-card { flex-basis: 42%; }
+}
+@media (min-width: 1056px) {
+  .pm .hero-cards { overflow: visible; }
+  .pm .hero-card { flex: 1 1 0; }
+  .pm .hero-card:first-child { flex-grow: 1.3; }
+  .pm .hero-cards:hover .hero-card { flex-grow: 0.92; }
+  .pm .hero-cards .hero-card:hover { flex-grow: 1.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm .sheen, .pm .hero-streaks line { animation: none; }
+}
+/* SplitText word masks: room for descenders. */
+.pm [data-h1] div {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}

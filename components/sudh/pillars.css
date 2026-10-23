@@ -1,0 +1,346 @@
+/*
+ * How you learn on /minimal-sudh: v4's five pillars in this page's light
+ * theme, as cards one below the other, each with a strip of photo tiles.
+ * Scoped to the page (.sx); CSS is global.
+ */
+
+.sx .lw {
+  /* Display headings at medium weight, as in the sections around it. */
+  --type-display-weight: var(--font-weight-medium);
+  --content-brand: var(--color-ssb-light-9);
+  /* The card's inner padding; the strip runs out to the card's edges past it. */
+  --lw-pad: var(--space-5);
+}
+
+.sx .lw-list {
+  display: grid;
+  /* minmax(0, …): the strips scroll inside their card, never widen it. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+/* ---- The card --------------------------------------------------------------------- */
+
+.sx .lw-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--lw-pad);
+  border: var(--border-width-hair) solid var(--color-border-decorative);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  /* #pillar-<key> links land below the sticky nav. */
+  scroll-margin-top: var(--space-20);
+}
+
+.sx .lw-name {
+  margin: 0;
+  font-size: 1.625rem;
+  line-height: 1.15;
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: -0.025em;
+}
+/* The pillar's number, in the title. */
+.sx .lw-idx {
+  margin-right: 0.2em;
+  color: var(--content-brand);
+}
+.sx .lw-claim {
+  margin: var(--space-2) 0 0;
+  max-width: 34rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-content-secondary);
+}
+
+/* The numbers, in a box: a row with hairlines between. */
+.sx .lw-nums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  margin: var(--space-5) 0 0;
+  padding: var(--space-4) 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+}
+.sx .lw-stat {
+  padding-inline: var(--space-4);
+}
+.sx .lw-stat + .lw-stat {
+  border-left: var(--border-width-hair) solid var(--color-border-decorative);
+}
+.sx .lw-stat dt {
+  font-size: 1.375rem;
+  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--color-content);
+}
+.sx .lw-stat dd {
+  margin: var(--space-1) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--color-content-secondary);
+}
+
+/* ---- The strip --------------------------------------------------------------------- */
+
+.sx .lw-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 2.25rem;
+  margin: var(--space-6) 0 var(--space-3);
+}
+.sx .lw-rail-k {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-content);
+}
+.sx .lw-arrows {
+  display: flex;
+  gap: var(--space-2);
+}
+.sx .lw-arrow {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+  color: var(--color-content);
+  cursor: pointer;
+  transition: background-color 0.15s linear;
+}
+.sx .lw-arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+.sx .lw-arrow:hover:not(:disabled) {
+  background: var(--color-surface-raised-active);
+}
+.sx .lw-arrow:disabled {
+  color: var(--color-content-disabled);
+  cursor: default;
+}
+.sx .lw-arrow:focus-visible,
+.sx .lw-rail:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* About two and a half tiles in view; the strip runs out to the card's edges. */
+.sx .lw-rail {
+  --lw-gap: var(--space-3);
+  display: flex;
+  gap: var(--lw-gap);
+  margin: 0 calc(-1 * var(--lw-pad));
+  padding: 0 var(--lw-pad) var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--lw-pad);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.sx .lw-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---- The tile: the photo, frosted and darkened at its foot, the words over it ------- */
+
+.sx .lw-tile {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: none;
+  width: clamp(15rem, calc((100cqw - 2 * var(--lw-pad) - 2 * var(--lw-gap)) / 2.5), 20rem);
+  /* A minimum: a tile with more to say grows taller. */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: #1c1c1c;
+  color: #fff;
+  scroll-snap-align: start;
+}
+.sx .lw-tile img {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The words' block carries its own frost and shade, reaching 4rem above it. */
+.sx .lw-tile-body {
+  position: relative;
+}
+.sx .lw-tile-frost,
+.sx .lw-tile-body::before {
+  content: '';
+  position: absolute;
+  inset: -4rem 0 0;
+  pointer-events: none;
+}
+.sx .lw-tile-frost {
+  z-index: -2;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+}
+.sx .lw-tile-body::before {
+  z-index: -1;
+  background: linear-gradient(to top, rgb(18 18 18 / 0.9) 0%, rgb(18 18 18 / 0.78) 55%, rgb(18 18 18 / 0.35) 82%, transparent 100%);
+}
+
+
+.sx .lw-tile-body {
+  padding: var(--space-5) var(--space-4) var(--space-4);
+}
+/* Under the body's frost and shade, inside the tile. */
+.sx .lw-tile-body > * {
+  position: relative;
+}
+.sx .lw-tile-body > .lw-tile-frost {
+  position: absolute;
+}
+.sx .lw-tile-k {
+  margin: 0 0 var(--space-1);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  font-weight: var(--font-weight-medium);
+  color: rgb(255 255 255 / 0.88);
+}
+.sx .lw-tile-t {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.sx .lw-tile-rule {
+  margin: var(--space-3) 0;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.28);
+}
+.sx .lw-tile-b {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 0.94);
+}
+
+/* ---- The tools marquee ------------------------------------------------------------- */
+
+.sx .lw-marquee {
+  margin: var(--space-5) calc(-1 * var(--lw-pad)) 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--lw-pad), #000 calc(100% - var(--lw-pad)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--lw-pad), #000 calc(100% - var(--lw-pad)), transparent);
+}
+.sx .lw-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: sx-lw-marquee calc(var(--n) * 3.5s) linear infinite;
+}
+.sx .lw-marquee:hover .lw-marquee-track {
+  animation-play-state: paused;
+}
+.sx .lw-marquee-set {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 var(--space-2) 0 0;
+  list-style: none;
+}
+.sx .lw-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2.5rem;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border: var(--border-width-hair) solid var(--color-border-decorative);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+.sx .lw-chip img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+@keyframes sx-lw-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---- Wider: the section's own width ------------------------------------------------ */
+
+@container (min-width: 36rem) {
+  .sx .lw {
+    --lw-pad: var(--space-8);
+  }
+  .sx .lw-card {
+    padding-block: var(--space-8);
+  }
+  .sx .lw-name {
+    font-size: 1.875rem;
+  }
+  .sx .lw-nums {
+    padding-block: var(--space-5);
+  }
+  .sx .lw-stat {
+    padding-inline: var(--space-5);
+  }
+  .sx .lw-stat dt {
+    font-size: 1.625rem;
+  }
+}
+
+/* Narrow: two numbers a row is too tight for three; the third wraps under. */
+@container (width < 30rem) {
+  .sx .lw-nums {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-4);
+  }
+  .sx .lw-stat:nth-child(3) {
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx .lw-arrow {
+    transition: none;
+  }
+  /* Still: the first set wraps, the copy goes. */
+  .sx .lw-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+    margin-inline: 0;
+  }
+  .sx .lw-marquee-track {
+    width: auto;
+    animation: none;
+  }
+  .sx .lw-marquee-set {
+    flex-wrap: wrap;
+    padding: 0;
+  }
+  .sx .lw-marquee-set[aria-hidden] {
+    display: none;
+  }
+}

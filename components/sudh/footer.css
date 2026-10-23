@@ -1,0 +1,295 @@
+/* /minimal-sudh footer, ported from v3 (sf-foot, building variant, green).
+   The page's content wrapper (.sf-lift) sits a layer above the sticky footer
+   and lifts off it; Footer.tsx sets --lift on the page root. v3's cascade of
+   base / building / green rules is flattened to the values that win. */
+
+.sx {
+  --lift: 0;
+}
+
+/* ---- The page, lifting off the footer ------------------------------------ */
+.sx > .sf-lift {
+  position: relative;
+  z-index: 2;
+  top: calc(var(--lift) * -8px);
+  padding-bottom: 56px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--surface-page);
+}
+@media (max-width: 640px) {
+  .sx > .sf-lift {
+    padding-bottom: 36px;
+  }
+}
+
+/* ---- Footer ---------------------------------------------------------------- */
+.sx .sf-foot {
+  --sf-gutter: 24px;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 16px 16px 0;
+  background: var(--surface-page);
+  color: var(--content-primary);
+}
+.sx .sf-foot > * {
+  position: relative;
+  z-index: 1;
+}
+
+.sx .sfb-card {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 48px 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--surface-brand-solid), black 14%) 0%,
+    var(--surface-brand-solid) 22%,
+    color-mix(in srgb, var(--surface-brand-solid) 62%, var(--surface-page)) 50%,
+    var(--surface-page) 96%
+  );
+}
+/* Film grain, fading out down the card. */
+.sx .sfb-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.2 -1.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  -webkit-mask-image: linear-gradient(#000 40%, #0000 85%);
+  mask-image: linear-gradient(#000 40%, #0000 85%);
+}
+
+.sx .sfb-top {
+  position: relative;
+  z-index: 3;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+  max-width: 75rem; /* the page's content measure, so the logo lines up with the nav's */
+  margin: 0 auto;
+}
+.sx .sfb-lead {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+.sx .sfb-tagline {
+  margin: 0;
+  color: var(--content-on-image);
+  font-weight: var(--font-weight-semibold, 600);
+}
+.sx .sfb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.sx .sfb-links {
+  display: flex;
+  gap: 72px;
+}
+.sx .sfb-col {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 9rem;
+}
+.sx .sfb-top .text-content-brand {
+  opacity: 0.85;
+  color: var(--content-on-image);
+}
+.sx .sf-foot .sf-links {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx .sf-foot .sf-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--type-body-sm-size, 0.875rem);
+  color: var(--content-on-image);
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.sx .sf-foot .sf-links a:hover,
+.sx .sf-foot .sf-links a:focus-visible {
+  color: var(--content-on-image);
+  text-decoration: none;
+}
+.sx .sf-foot .sf-links a:hover {
+  opacity: 0.8;
+  animation: sf-bounce 0.42s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes sf-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-3px);
+  }
+  65% {
+    transform: translateY(1px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---- The wordmark and the building ---------------------------------------------- */
+.sx .sfb-stage {
+  --wm: calc(100cqi / 11.45);
+  --bw: calc(100vw - 32px);
+  position: relative;
+  z-index: 1;
+  max-width: 1232px;
+  margin: 32px auto 0;
+  container-type: inline-size;
+}
+.sx .sfb-wordmark {
+  position: relative;
+  top: 20px;
+  z-index: 1;
+  margin: 0;
+  font-size: var(--wm);
+  line-height: 1.05;
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: -0.035em;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--content-on-image);
+  -webkit-text-fill-color: currentColor;
+  transform: translateY(calc((1 - var(--lift)) * var(--wm) * 1.3));
+}
+.sx .sfb-wordmark > span {
+  display: inline;
+}
+.sx .sfb-wm[data-layer='fill'] {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+      105deg,
+      color-mix(in srgb, var(--content-on-image) 42%, transparent) 0%,
+      color-mix(in srgb, var(--content-on-image) 42%, transparent) 36%,
+      color-mix(in srgb, var(--content-on-image) 80%, transparent) 44%,
+      var(--content-on-image) 50%,
+      color-mix(in srgb, var(--content-on-image) 80%, transparent) 56%,
+      color-mix(in srgb, var(--content-on-image) 42%, transparent) 64%,
+      color-mix(in srgb, var(--content-on-image) 42%, transparent) 100%
+    )
+    0 0 / 250% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--content-on-image) 45%, transparent)) brightness(1.08);
+  animation: sfb-shimmer 4.5s ease-in-out infinite;
+}
+@keyframes sfb-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.sx .sfb-building {
+  --bw2: min(var(--bw), 1100px);
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: var(--bw2);
+  max-width: none;
+  height: auto;
+  margin: calc(var(--bw2) * -0.17 - var(--wm) * 0.16) auto calc(var(--bw2) * -0.187) calc(50% - var(--bw2) / 2);
+  -webkit-mask-image: linear-gradient(#000 56%, #0000 71%), linear-gradient(90deg, #0000, #000 10% 90%, #0000);
+  mask-image: linear-gradient(#000 56%, #0000 71%), linear-gradient(90deg, #0000, #000 10% 90%, #0000);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  transform: translateY(calc((1 - var(--lift)) * 16px));
+  will-change: transform;
+}
+.sx .sfb-legal {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  padding: 16px var(--sf-gutter) 20px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .sx .sf-foot {
+    padding: 8px 8px 0;
+  }
+  .sx .sfb-card {
+    padding: 28px 24px 0;
+  }
+  .sx .sfb-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .sx .sfb-actions {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+  }
+  .sx .sfb-actions > * {
+    justify-content: center;
+    width: 100%;
+  }
+  .sx .sfb-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .sx .sfb-col {
+    gap: 12px;
+    min-width: 0;
+  }
+  .sx .sfb-stage {
+    --wm: calc(100cqi / 6.3);
+    --bw: calc(100cqi + 48px);
+    margin-top: 40px;
+  }
+  .sx .sfb-wordmark {
+    white-space: normal;
+    line-height: 1;
+  }
+  .sx .sfb-wordmark > span,
+  .sx .sfb-wm > span {
+    display: block;
+  }
+  .sx .sfb-building {
+    --bw2: var(--bw);
+    margin-left: -24px;
+    margin-bottom: calc(var(--bw2) * -0.187);
+    -webkit-mask-image: linear-gradient(#000 56%, #0000 71%);
+    mask-image: linear-gradient(#000 56%, #0000 71%);
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+  }
+  .sx .sfb-legal {
+    padding: 12px 16px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx .sfb-wordmark,
+  .sx .sfb-building {
+    transform: none;
+  }
+  .sx .sfb-wm[data-layer='fill'],
+  .sx .sf-foot .sf-links a:hover {
+    animation: none;
+  }
+}

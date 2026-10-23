@@ -1,0 +1,647 @@
+/* /minimal-sudh campus life + student clubs, ported from v3 (lab / cm / vc /
+   rs-row / cn). Width rules are container queries on each section, since they
+   sit in the column beside the form. The pinned pull-back keeps v3's viewport
+   gate (it is what puts the page in two columns). */
+
+.sx .cm,
+.sx .cm-clubs {
+  --content-brand: var(--color-ssb-light-9); /* v3 brightens the SSB brand ink site-wide */
+}
+.sx .cm {
+  --sn-h: 4rem; /* SiteNav's height: the stage pins under it */
+  padding-bottom: 0;
+}
+
+/* ---- Head ------------------------------------------------------------------ */
+.sx .cm .lab-head {
+  display: grid;
+  gap: var(--space-8);
+  margin-bottom: var(--space-10);
+}
+.sx .cm .lab-copy {
+  max-width: 44rem;
+}
+.sx .cm .lab-copy > * {
+  text-wrap: balance;
+}
+.sx .cm .lab-frame {
+  position: static;
+}
+
+/* ---- Mosaic ---------------------------------------------------------------- */
+.sx .cm .lab-mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'hero hero'
+    'a d'
+    'b e';
+  gap: var(--space-2);
+}
+.sx .cm .lab-slot {
+  display: grid;
+  grid-area: hero;
+}
+.sx .cm .cm-slot > * {
+  grid-area: 1 / 1;
+}
+.sx .cm .lab-tile {
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+.sx .cm .lab-hero {
+  aspect-ratio: 4 / 3;
+}
+.sx .cm .lab-tile img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+}
+.sx .cm .lab-tile[data-area='a'] {
+  grid-area: a;
+}
+.sx .cm .lab-tile[data-area='b'] {
+  grid-area: b;
+}
+.sx .cm .lab-tile[data-area='d'] {
+  grid-area: d;
+}
+.sx .cm .lab-tile[data-area='e'] {
+  grid-area: e;
+}
+@container (min-width: 672px) {
+  .sx .cm .lab-mosaic {
+    gap: var(--space-3);
+  }
+  .sx .cm .lab-tile {
+    aspect-ratio: 3 / 2;
+  }
+  .sx .cm .lab-hero {
+    aspect-ratio: 16 / 9;
+  }
+}
+@container (min-width: 1056px) {
+  .sx .cm .lab-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--space-12);
+    margin-bottom: var(--space-12);
+  }
+  .sx .cm .lab-mosaic {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      'a hero d'
+      'a hero e'
+      'b hero e';
+    height: clamp(30rem, 46vw, 42rem);
+  }
+  .sx .cm .lab-tile,
+  .sx .cm .lab-hero {
+    aspect-ratio: auto;
+  }
+}
+
+.sx .cm .lab-tile[data-area] img {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sx .cm .lab-tile[data-area]:hover img,
+  .sx .cm[data-lab-static] .lab-tile[data-area][data-in]:hover img {
+    transform: scale(1.05);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* ---- Desktop: the pinned stage and the pull-back ----------------------------- */
+@media (min-width: 1056px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .sx .cm .lab-track {
+    height: calc(100svh - var(--sn-h) + 75svh);
+  }
+  .sx .cm .lab-stage {
+    position: sticky;
+    top: var(--sn-h);
+    height: calc(100svh - var(--sn-h));
+    overflow: clip;
+  }
+  .sx .cm .lab-frame {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-block: var(--space-6);
+  }
+  .sx .cm .lab-frame .lab-head {
+    flex: none;
+    margin-bottom: var(--space-8);
+  }
+  .sx .cm .lab-frame .lab-mosaic {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+  .sx .cm .lab-frame .lab-tile,
+  .sx .cm .lab-frame .lab-hero {
+    aspect-ratio: auto;
+  }
+  /* In the column the mosaic keeps its two-up shape and fills the stage. */
+  @container (max-width: 1055px) {
+    .sx .cm .lab-frame .lab-mosaic {
+      grid-template-rows: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+  .sx .cm[data-lab-live] .lab-hero {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 0;
+  }
+  .sx .cm[data-lab-live] .lab-hero img,
+  .sx .cm[data-lab-live] .lab-tile[data-area] {
+    will-change: transform;
+  }
+}
+
+/* ---- Elsewhere: the heading fades up, the photos wipe up ---------------------- */
+.sx .cm[data-lab-static] .lab-head {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity 0.8s cubic-bezier(0, 0, 0.3, 1),
+    transform 0.8s cubic-bezier(0, 0, 0.3, 1);
+}
+.sx .cm[data-lab-static] .lab-head[data-in] {
+  opacity: 1;
+  transform: none;
+}
+.sx .cm[data-lab-static] :is(.lab-hero, .lab-tile[data-area]) {
+  clip-path: inset(100% 0% 0% 0% round var(--radius-lg));
+  transition: clip-path 0.625s cubic-bezier(0.4, 0.14, 0.3, 1) calc(var(--i, 0) * 90ms);
+}
+.sx .cm[data-lab-static] :is(.lab-hero, .lab-tile[data-area])[data-in] {
+  clip-path: inset(0% 0% 0% 0% round var(--radius-lg));
+}
+.sx .cm[data-lab-static] :is(.lab-hero, .lab-tile[data-area]) img {
+  transform: scale(1.18);
+  transition: transform 0.75s cubic-bezier(0, 0, 0.3, 1) calc(var(--i, 0) * 90ms);
+}
+.sx .cm[data-lab-static] :is(.lab-hero, .lab-tile[data-area])[data-in] img {
+  transform: none;
+}
+
+/* ---- "Follow us on" ------------------------------------------------------------ */
+.sx .cm-social {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: calc(100% - var(--space-8));
+  margin: var(--space-4);
+  place-self: end start;
+}
+.sx .cm-social__label {
+  flex-basis: 100%;
+  margin: 0 0 var(--space-1);
+  font-size: var(--type-caption-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  color: var(--content-on-image);
+  text-shadow: 0 1px 8px #00000073;
+}
+.sx .cm-glass {
+  --cm-glass: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-4) 0 var(--space-3);
+  border: 1px solid #fff3;
+  border-radius: var(--radius-lg);
+  background: rgb(23 23 23 / 0.55);
+  -webkit-backdrop-filter: var(--cm-glass);
+  backdrop-filter: var(--cm-glass);
+  color: var(--content-on-image);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s linear;
+}
+.sx .cm-glass:hover {
+  background: color-mix(in srgb, var(--content-on-image) 28%, transparent);
+}
+.sx .cm-glass:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+.sx .cm-glass .cm-ig {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+.sx .cm-glass__note {
+  font-weight: var(--font-weight-regular, 400);
+  opacity: 0.8;
+}
+@container (max-width: 671px) {
+  .sx .cm-social {
+    max-width: calc(100% - var(--space-6));
+    margin: var(--space-3);
+  }
+  .sx .cm-glass {
+    height: 36px;
+    padding: 0 var(--space-3) 0 var(--space-2);
+    font-size: var(--type-caption-size);
+  }
+  .sx .cm-glass .cm-ig {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ---- Student clubs ----------------------------------------------------------- */
+.sx .cm-clubs__head {
+  margin-bottom: var(--space-6);
+}
+@container (min-width: 672px) {
+  .sx .cm-clubs__head {
+    margin-bottom: var(--space-8);
+  }
+}
+.sx .cm-clubs .lab-sub {
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-lh);
+  font-weight: var(--type-h2-weight);
+}
+
+.sx .cm-clubs .rs-row {
+  --scroller-inset: 0px;
+  display: flex;
+  column-gap: var(--space-4);
+  margin: 0;
+  padding: 0 var(--scroller-inset) var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--scroller-inset);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.sx .cm-clubs .rs-row::-webkit-scrollbar {
+  display: none;
+}
+/* Single column (phones, tablets): the row runs to the screen edges, as on v3. */
+@media (max-width: 1055px) {
+  .sx .cm-clubs .rs-row {
+    --scroller-inset: var(--space-gutter);
+    margin-inline: calc(var(--space-gutter) * -1);
+  }
+}
+.sx .cm-clubs .rs-row > li {
+  flex: none;
+  width: min(82vw, var(--rs-card, 20rem), 88cqi);
+  scroll-snap-align: start;
+}
+.sx .cm-clubs .rs-row > li > article {
+  height: 100%;
+}
+.sx .cm-clubs .rs-row h3 {
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-lh);
+  font-weight: var(--type-h3-weight);
+  letter-spacing: var(--type-h3-tracking);
+}
+
+.sx .cm-clubs .vc {
+  display: grid;
+  height: 100%;
+  overflow: hidden;
+  border: var(--border-hair) solid var(--border-decorative);
+  border-radius: var(--radius-lg);
+  background: var(--surface-page);
+}
+.sx .cm-clubs .vc-media {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin: var(--space-3) var(--space-3) 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  background: var(--color-neutral-dark-2);
+}
+.sx .cm-clubs .vc-layers {
+  position: absolute;
+  inset: 0;
+}
+.sx .cm-clubs .vc-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.1);
+}
+.sx .cm-clubs .vc-tag {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  height: var(--space-6);
+  padding-inline: var(--space-2-5);
+  border: var(--border-hair) solid #fff3;
+  border-radius: var(--radius-md);
+  background: rgb(23 23 23 / 0.55);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  color: #fff;
+}
+.sx .cm-clubs .vc-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+.sx .cm-clubs .vc-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.sx .cm-clubs .vc-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.sx .cm-clubs .vc-text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+@container (min-width: 672px) {
+  .sx .cm-clubs .vc {
+    grid-template-columns: 16rem minmax(0, 1fr);
+  }
+  .sx .cm-clubs .vc-media {
+    align-self: start;
+    margin: var(--space-3) 0 var(--space-3) var(--space-3);
+    aspect-ratio: 4 / 3;
+  }
+}
+/* v3 squares the photo on desktop; in the column that is still the desktop card. */
+@media (min-width: 1056px) {
+  @container (min-width: 672px) {
+    .sx .cm-clubs .vc-media {
+      aspect-ratio: 1;
+    }
+  }
+}
+
+/* ---- Carousel dots (v3's CarouselNav) ------------------------------------------- */
+.sx .cm-clubs .cn {
+  --cn-h: 40px;
+  --cn-radius: var(--radius-lg);
+  --cn-pill: var(--surface-sunken);
+  --cn-pill-hover: var(--surface-raised-active);
+  --cn-dot: var(--border-inert);
+  --cn-dot-hover: var(--content-disabled);
+  --cm-cn-fill: var(--surface-brand-solid);
+  --cn-ink: var(--content-primary);
+  --cn-active: 40px;
+  --cn-bounce: cubic-bezier(0.22, 1, 0.36, 1);
+  --cn-split: cubic-bezier(0.34, 1.4, 0.64, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+}
+.sx .cm-clubs .cn-dots,
+.sx .cm-clubs .cn-arrow {
+  height: var(--cn-h);
+  border-radius: var(--cn-radius);
+  background: var(--cn-pill);
+  will-change: transform, opacity;
+}
+.sx .cm-clubs .cn-dots {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 calc(var(--space-3) - var(--cn-gap) / 2);
+}
+.sx .cm-clubs .cn-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 0 calc(var(--cn-gap) / 2);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.sx .cm-clubs .cn-dot::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
+  background: var(--cn-dot);
+  transition:
+    width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s linear;
+}
+.sx .cm-clubs .cn-dot:hover::before {
+  background: var(--cn-dot-hover);
+}
+.sx .cm-clubs .cn-dot[aria-current='true']::before {
+  width: var(--cn-active);
+  background: var(--cn-dot);
+  transition:
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.28s,
+    background-color 0.25s linear 0.28s;
+}
+.sx .cm-clubs .cn-fill {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--cn-gap) / 2);
+  width: calc(8px + (var(--cn-active) - 8px) * var(--cn-p, 0));
+  height: 8px;
+  border-radius: 10px;
+  background: var(--cm-cn-fill);
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: cm-cn-fill-in 0.2s ease-out 0.55s backwards;
+}
+.sx .cm-clubs .cn-fill[data-timed] {
+  width: 8px;
+  animation:
+    cm-cn-fill-in 0.2s ease-out 0.55s backwards,
+    cm-cn-fill var(--cn-interval, 6s) linear 0.55s forwards;
+}
+.sx .cm-clubs .cn-fill[data-paused] {
+  animation-play-state: paused;
+}
+.sx .cm-clubs .cn-arrow {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--cn-h);
+  padding: 0;
+  border: 0;
+  color: var(--cn-ink);
+  cursor: pointer;
+  transition:
+    background-color 0.15s linear,
+    opacity 0.15s linear;
+}
+.sx .cm-clubs .cn-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+.sx .cm-clubs .cn-arrow:hover:not(:disabled) {
+  background: var(--cn-pill-hover);
+}
+.sx .cm-clubs .cn-arrow:disabled {
+  color: var(--content-disabled);
+  cursor: default;
+}
+.sx .cm-clubs :is(.cn-dot, .cn-arrow):focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+.sx .cm-clubs .cn-dot:focus-visible {
+  border-radius: var(--radius-sm);
+}
+.sx .cm-clubs .cn:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(72px);
+}
+.sx .cm-clubs .cn:not([data-shown]) .cn-dots {
+  clip-path: inset(0 calc(50% - var(--cn-h) / 2) round var(--cn-radius));
+}
+.sx .cm-clubs .cn:not([data-shown]) :is(.cn-dot, .cn-arrow) {
+  opacity: 0;
+}
+.sx .cm-clubs .cn:not([data-shown]) .cn-arrow[data-side='prev'] {
+  transform: translate3d(var(--cn-shift, 0), 0, 0);
+}
+.sx .cm-clubs .cn:not([data-shown]) .cn-arrow[data-side='next'] {
+  transform: translate3d(calc(var(--cn-shift, 0) * -1), 0, 0);
+}
+.sx .cm-clubs .cn[data-shown] {
+  animation: cm-cn-rise 0.75s var(--cn-bounce) both;
+}
+.sx .cm-clubs .cn[data-shown] .cn-dots {
+  animation: cm-cn-open 0.65s var(--cn-split) 0.5s both;
+}
+.sx .cm-clubs .cn[data-shown] .cn-arrow[data-side='prev'] {
+  animation: cm-cn-out-left 0.65s var(--cn-split) 0.5s both;
+}
+.sx .cm-clubs .cn[data-shown] .cn-arrow[data-side='next'] {
+  animation: cm-cn-out-right 0.65s var(--cn-split) 0.5s both;
+}
+.sx .cm-clubs .cn[data-shown] .cn-dot {
+  animation: cm-cn-fade 0.3s ease-out 0.85s both;
+}
+@container (max-width: 671px) {
+  .sx .cm-clubs .cn {
+    --cn-active: 28px;
+    margin-top: var(--space-6);
+  }
+}
+@keyframes cm-cn-fill {
+  to {
+    width: var(--cn-active);
+  }
+}
+@keyframes cm-cn-fill-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cm-cn-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(72px) scale(0.6);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1.08);
+  }
+  72% {
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+@keyframes cm-cn-open {
+  from {
+    clip-path: inset(0 calc(50% - var(--cn-h) / 2) round var(--cn-radius));
+  }
+  to {
+    clip-path: inset(0 0 round var(--cn-radius));
+  }
+}
+@keyframes cm-cn-out-left {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--cn-shift, 0), 0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@keyframes cm-cn-out-right {
+  0% {
+    opacity: 0;
+    transform: translate3d(calc(var(--cn-shift, 0) * -1), 0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@keyframes cm-cn-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx .cm-clubs .cn,
+  .sx .cm-clubs .cn .cn-dots,
+  .sx .cm-clubs .cn .cn-dot,
+  .sx .cm-clubs .cn .cn-arrow {
+    opacity: 1;
+    clip-path: none;
+    animation: none;
+    transform: none;
+  }
+  .sx .cm-clubs .cn-dot::before {
+    transition: none;
+  }
+  .sx .cm-clubs .cn-fill,
+  .sx .cm-clubs .cn-fill[data-timed] {
+    width: var(--cn-active);
+    animation: none;
+  }
+}

@@ -1,0 +1,98 @@
+/* v3's logo wall (PeersFlip), used by the placement and alumni sections of /minimal-sudh.
+   A hairline grid: the 1px gaps show the list's fill between white cells. */
+
+.sx .peers-title {
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-lh);
+  font-weight: var(--type-h2-weight);
+  text-wrap: balance;
+}
+
+.sx .peers-flip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+
+.sx .peers-flip-cell {
+  display: block;
+  height: 4rem;
+  perspective: 600px;
+}
+
+.sx .peers-flip-card {
+  position: relative;
+  height: 100%;
+}
+
+/* A new logo tips in from the top edge. */
+.sx .peers-flip-card[data-turned] {
+  transform-origin: 50% center;
+  animation: peers-flip-in 0.52s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.sx .peers-flip-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 6px;
+  background: var(--surface-page);
+}
+
+/* Each logo carries its optical width in --w; the cell scales it down. */
+.sx .peers-flip-logo {
+  --peers-s: 0.56;
+  display: block;
+  width: min(calc(var(--w) * var(--peers-s)), 86%);
+  height: auto;
+  max-height: 65%;
+  object-fit: contain;
+}
+
+@keyframes peers-flip-in {
+  0% {
+    opacity: 0.4;
+    transform: rotateX(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(0);
+  }
+}
+
+@container (min-width: 42rem) {
+  .sx .peers-flip {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .sx .peers-flip-cell {
+    height: 6.5rem;
+  }
+  .sx .peers-flip-face {
+    padding: 0 var(--space-4);
+  }
+  .sx .peers-flip-logo {
+    --peers-s: 0.85;
+    max-height: 70%;
+  }
+}
+
+@container (max-width: calc(42rem - 0.02px)) {
+  .sx .peers-title {
+    font-size: 1.25rem;
+    line-height: 1.33;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx .peers-flip-card[data-turned] {
+    animation: none;
+  }
+}

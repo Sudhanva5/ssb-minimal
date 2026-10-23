@@ -1,0 +1,50 @@
+/*
+ * Faculty and mentors (v3's #people and #mentors) on /minimal-sudh: the
+ * section frame. The cards and their rail are in rail.css. Every rule is
+ * scoped to the page (.sx) and the people sections (.pt-section).
+ */
+
+.sx .pt-section {
+  /* v3's page-level choices: the SSB brand ink one step lighter, display headings at medium weight. */
+  --content-brand: var(--color-ssb-light-9);
+  --type-display-weight: var(--font-weight-medium);
+}
+
+/* Below 1056px the page is one column, so the rails run to the screen edges, as on v3. */
+@media (width < 1056px) {
+  .sx .pt-section {
+    margin-inline: calc(-1 * var(--space-gutter));
+  }
+  .sx .pt-section .pt-head {
+    padding-inline: var(--space-gutter);
+  }
+}
+
+.sx .pt-section .pt-panel {
+  animation: sx-pt-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sx .pt-section .pt-subs {
+  display: grid;
+}
+.sx .pt-section .pt-subs > * {
+  visibility: hidden;
+  grid-area: 1 / 1;
+}
+.sx .pt-section .pt-subs > [data-on] {
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx .pt-section .pt-panel {
+    animation: none;
+  }
+}
+
+/* Prefixed: CSS is global across routes. */
+@keyframes sx-pt-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

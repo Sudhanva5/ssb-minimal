@@ -1,0 +1,6 @@
+/* /minimal-sudh: v3's alumni section. The cards and their rail are in rail.css,
+   the logo wall in placement-peers.css, the header entrance in placement.css. */
+
+.sx #alumni .peers-title {
+  font-weight: var(--type-h3-weight);
+}

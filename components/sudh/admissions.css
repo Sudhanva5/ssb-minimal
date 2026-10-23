@@ -1,0 +1,218 @@
+/* /minimal-sudh admissions, ported from v3 (adm-*). Width rules are container
+   queries on the section (.sx-adm is a Tailwind @container), since it sits in
+   the column beside the form. v3's !important overrides are folded in. */
+
+/* v3 brightens the SSB brand ink site-wide (eyebrows, accents). */
+.sx .sx-adm {
+  --content-brand: var(--color-ssb-light-9);
+}
+
+.sx .adm-table {
+  display: none;
+}
+.sx .adm-intakes {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx .adm-intakes > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: var(--border-hair) solid var(--border-subtle);
+}
+.sx .adm-intakes > li:first-child {
+  padding-top: 0;
+}
+.sx .adm-intakes-note {
+  margin-top: var(--space-3);
+}
+@container (min-width: 672px) {
+  .sx .adm-table {
+    display: block;
+  }
+  .sx .adm-intakes,
+  .sx .adm-intakes-note {
+    display: none;
+  }
+}
+
+.sx .adm-card > [data-slot='card-body'] {
+  padding: var(--space-5);
+}
+
+.sx .adm-frame {
+  border: var(--border-hair) solid var(--border-decorative);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.sx .adm-ground {
+  position: relative;
+  height: 100%;
+  padding: var(--space-4);
+  overflow: hidden;
+  background:
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--surface-brand-solid) 30%, transparent), transparent 60%),
+    radial-gradient(80% 110% at 100% 100%, color-mix(in srgb, var(--surface-brand-solid) 22%, transparent), transparent 60%),
+    var(--surface-brand-subtle);
+}
+
+/* The glass plates over the illustration. */
+.sx .adm-glass,
+.sx .adm-process__panel {
+  border: 1px solid #fff3;
+  border-radius: var(--radius-lg);
+  background: rgb(23 23 23 / 0.55);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  color: var(--content-on-image);
+}
+.sx .adm-glass p {
+  color: inherit;
+  opacity: 0.88;
+}
+
+.sx .adm-process {
+  display: flex;
+  min-height: 26rem;
+}
+.sx .adm-process > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 0% 55%;
+}
+.sx .adm-process__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 46%;
+  padding: var(--space-6);
+}
+.sx .adm-process__panel h3 {
+  color: inherit;
+}
+.sx .adm-process__steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx .adm-process__steps > li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--glass-on-image-surface);
+  font-weight: var(--font-weight-medium);
+}
+.sx .adm-process__steps > li:last-child {
+  border-bottom: 1px solid var(--glass-on-image-surface);
+}
+.sx .adm-process__steps > li > span {
+  flex: none;
+  width: 1.75rem;
+  font-size: var(--type-caption-size);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+.sx .adm-process__fast {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: auto;
+}
+.sx .adm-process__fast p {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.sx .adm-scholar {
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 16 / 9;
+}
+.sx .adm-scholar > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+.sx .adm-scholar__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+}
+.sx .adm-scholar__figure {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.sx .adm-scholar__figure > span {
+  margin-bottom: var(--space-1);
+  font-size: var(--type-caption-size);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+.sx .adm-scholar__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.sx .adm-scholar__copy > * {
+  color: inherit;
+}
+
+@container (max-width: 671px) {
+  .sx .adm-ground {
+    padding: var(--space-3);
+  }
+  .sx .adm-process {
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    padding-top: 12rem;
+  }
+  .sx .adm-process > img {
+    height: 16rem;
+    object-position: 80% 40%;
+  }
+  .sx .adm-process__panel {
+    width: 100%;
+    padding: var(--space-5);
+  }
+  .sx .adm-scholar {
+    aspect-ratio: 4 / 5;
+  }
+  .sx .adm-scholar__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .sx .adm-scholar__figure {
+    font-size: var(--type-billboard-sm-size);
+  }
+}

@@ -1,0 +1,444 @@
+/*
+ * The people rail (CardRail.tsx), shared by faculty, mentors and alumni on
+ * /minimal-sudh: two rows of dark cards in snapping columns, and v3's
+ * prev / dots / next control. Scoped to the page (.sx); CSS is global.
+ */
+
+/* ---- The rail ------------------------------------------------------------------- */
+
+.sx .rail {
+  /* Where the row starts: flush with the column beside the form. */
+  --scroller-inset: 0px;
+  /* Two cards and a glimpse of the third in the column; one and a bit on a phone. */
+  --rail-card-w: clamp(18rem, 41cqw, 22rem);
+}
+
+/* Below 1056px the page is one column and the sections run to the screen edges. */
+@media (width < 1056px) {
+  .sx .rail {
+    --scroller-inset: var(--space-gutter);
+  }
+}
+
+.sx .rail-list {
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: var(--rail-card-w);
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 var(--scroller-inset) var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--scroller-inset);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.sx .rail-list::-webkit-scrollbar {
+  display: none;
+}
+.sx .rail-list > li {
+  container-type: inline-size;
+  scroll-snap-align: start;
+}
+
+/* ---- The card --------------------------------------------------------------------
+   Sized from its own width (cqw), so it reads the same at every card size. */
+
+.sx .pc-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: #232323;
+  color: var(--on-image-ink);
+}
+/* A soft light behind the text. */
+.sx .pc-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 85% 45%, rgb(255 255 255 / 0.08), transparent 60%);
+}
+
+.sx .pc-card__photo {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: -2;
+  width: 56%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent);
+  mask-image: linear-gradient(90deg, #000 60%, transparent);
+}
+/* A full-card photo: the person on the left, a shade behind the words on the right. */
+.sx .pc-card[data-photo='full'] .pc-card__photo {
+  width: 100%;
+  object-position: 50% 30%;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.sx .pc-card[data-photo='full']::before {
+  background: linear-gradient(90deg, transparent 40%, rgb(0 0 0 / 0.4) 75%);
+}
+.sx .pc-card__initials {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  translate: -50% -50%;
+  font-size: 12cqw;
+  line-height: 1;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
+}
+
+.sx .pc-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  width: 51%;
+  margin-left: auto;
+  padding: 7cqw 5cqw 5cqw 0;
+}
+
+.sx .pc-card__title {
+  margin: 0;
+  font-size: clamp(1.125rem, 7cqw, 1.75rem);
+  line-height: 1.1;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.sx .pc-card[data-size='sm'] .pc-card__title {
+  font-size: clamp(1rem, 5.6cqw, 1.375rem);
+  line-height: 1.15;
+}
+.sx .pc-card__by {
+  margin: 2.6cqw 0 0;
+  font-size: clamp(0.75rem, 4cqw, 1rem);
+  line-height: 1.3;
+  font-weight: var(--font-weight-semibold);
+}
+.sx .pc-card__rule {
+  align-self: stretch;
+  margin: 4cqw 0;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.18);
+}
+.sx .pc-card__detail {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(0.6875rem, 3.6cqw, 0.9375rem);
+  line-height: 1.4;
+  color: var(--on-image-ink-secondary);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* The companies: a square tile and the name beside it. */
+.sx .pc-card__orgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2cqw 4cqw;
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sx .pc-card__org {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+  min-width: 0;
+}
+.sx .pc-card__tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: clamp(1.75rem, 10.5cqw, 2.5rem);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.sx .pc-card__tile img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+.sx .pc-card__tile[data-fill] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sx .pc-card__tile[data-mono] {
+  font-size: clamp(1.25rem, 7.5cqw, 1.75rem);
+  line-height: 1;
+  font-weight: 800;
+  color: #111;
+}
+.sx .pc-card__tint {
+  width: 72%;
+  height: 72%;
+  mask: center / contain no-repeat;
+  -webkit-mask: center / contain no-repeat;
+}
+.sx .pc-card__org-name {
+  min-width: 0;
+  font-size: clamp(0.8125rem, 4.6cqw, 1.125rem);
+  line-height: 1.15;
+  font-weight: var(--font-weight-medium);
+  text-wrap: balance;
+}
+/* Two companies (a mentor's pair): smaller names, so both fit. */
+.sx .pc-card__orgs:has(> :nth-child(2)) .pc-card__org-name {
+  font-size: clamp(0.6875rem, 3.6cqw, 0.875rem);
+}
+
+/* ---- Carousel control: prev, dots, next ------------------------------------------ */
+
+.sx .rail .cn {
+  --cn-h: 40px;
+  --cn-radius: var(--radius-md);
+  --cn-pill: var(--surface-sunken);
+  --cn-pill-hover: var(--surface-raised-active);
+  --cn-dot: var(--border-inert);
+  --cn-dot-hover: var(--content-disabled);
+  --cn-fill: var(--surface-brand-solid);
+  --cn-ink: var(--content-primary);
+  --cn-active: 40px;
+  --cn-bounce: cubic-bezier(0.22, 1, 0.36, 1);
+  --cn-split: cubic-bezier(0.34, 1.4, 0.64, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+}
+
+.sx .rail .cn-dots,
+.sx .rail .cn-arrow {
+  height: var(--cn-h);
+  border-radius: var(--cn-radius);
+  background: var(--cn-pill);
+  will-change: transform, opacity;
+}
+
+.sx .rail .cn-dots {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 calc(var(--space-3) - var(--cn-gap) / 2);
+}
+
+.sx .rail .cn-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 0 calc(var(--cn-gap) / 2);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.sx .rail .cn-dot::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
+  background: var(--cn-dot);
+  transition:
+    width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s linear;
+}
+.sx .rail .cn-dot:hover::before {
+  background: var(--cn-dot-hover);
+}
+.sx .rail .cn-dot[aria-current='true']::before {
+  width: var(--cn-active);
+}
+
+/* The current dot, filled. */
+.sx .rail .cn-fill {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--cn-gap) / 2);
+  width: var(--cn-active);
+  height: 8px;
+  border-radius: 10px;
+  background: var(--cn-fill);
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: sx-rail-fill 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.sx .rail .cn-arrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--cn-h);
+  padding: 0;
+  border: 0;
+  color: var(--cn-ink);
+  cursor: pointer;
+  transition:
+    background-color 0.15s linear,
+    opacity 0.15s linear;
+}
+.sx .rail .cn-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+.sx .rail .cn-arrow:hover:not(:disabled) {
+  background: var(--cn-pill-hover);
+}
+.sx .rail .cn-arrow:disabled {
+  color: var(--content-disabled);
+  cursor: default;
+}
+
+.sx .rail .cn-dot:focus-visible,
+.sx .rail .cn-arrow:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+.sx .rail .cn-dot:focus-visible {
+  border-radius: var(--radius-sm);
+}
+
+/* Entrance: the control rises, the dots open and the arrows slide out from behind them. */
+.sx .rail .cn:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(72px);
+}
+.sx .rail .cn:not([data-shown]) .cn-dots {
+  clip-path: inset(0 calc(50% - var(--cn-h) / 2) round var(--cn-radius));
+}
+.sx .rail .cn:not([data-shown]) .cn-dot,
+.sx .rail .cn:not([data-shown]) .cn-arrow {
+  opacity: 0;
+}
+.sx .rail .cn:not([data-shown]) .cn-arrow[data-side='prev'] {
+  transform: translate3d(var(--cn-shift, 0), 0, 0);
+}
+.sx .rail .cn:not([data-shown]) .cn-arrow[data-side='next'] {
+  transform: translate3d(calc(var(--cn-shift, 0) * -1), 0, 0);
+}
+.sx .rail .cn[data-shown] {
+  animation: sx-cn-rise 0.75s var(--cn-bounce) both;
+}
+.sx .rail .cn[data-shown] .cn-dots {
+  animation: sx-cn-open 0.65s var(--cn-split) 0.5s both;
+}
+.sx .rail .cn[data-shown] .cn-arrow[data-side='prev'] {
+  animation: sx-cn-out-left 0.65s var(--cn-split) 0.5s both;
+}
+.sx .rail .cn[data-shown] .cn-arrow[data-side='next'] {
+  animation: sx-cn-out-right 0.65s var(--cn-split) 0.5s both;
+}
+.sx .rail .cn[data-shown] .cn-dot {
+  animation: sx-cn-fade 0.3s ease-out 0.85s both;
+}
+
+@container (width < 42rem) {
+  .sx .rail .cn {
+    --cn-active: 28px;
+    margin-top: var(--space-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx .rail .cn,
+  .sx .rail .cn .cn-dots,
+  .sx .rail .cn .cn-dot,
+  .sx .rail .cn .cn-arrow,
+  .sx .rail .cn-fill {
+    opacity: 1 !important;
+    clip-path: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  .sx .rail .cn-fill {
+    transform: translateY(-50%) !important;
+  }
+  .sx .rail .cn-dot::before {
+    transition: none;
+  }
+}
+
+/* ---- Keyframes (prefixed: CSS is global across routes) --------------------------- */
+
+@keyframes sx-rail-fill {
+  from {
+    width: 8px;
+    opacity: 0;
+  }
+}
+
+@keyframes sx-cn-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(72px) scale(0.6);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1.08);
+  }
+  72% {
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes sx-cn-open {
+  0% {
+    clip-path: inset(0 calc(50% - var(--cn-h) / 2) round var(--cn-radius));
+  }
+  to {
+    clip-path: inset(0 0 round var(--cn-radius));
+  }
+}
+
+@keyframes sx-cn-out-left {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--cn-shift, 0), 0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes sx-cn-out-right {
+  0% {
+    opacity: 0;
+    transform: translate3d(calc(var(--cn-shift, 0) * -1), 0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes sx-cn-fade {
+  0% {
+    opacity: 0;
+  }
+}

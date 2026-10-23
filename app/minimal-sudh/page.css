@@ -1,0 +1,24 @@
+/* /minimal-sudh: a wider measure than the other variants (1312px of content,
+   not 1200px), so the column beside the form has room to breathe. */
+.sx {
+  --site-content-max: calc(82rem + 2 * var(--space-gutter));
+}
+
+/* The hero's height and the space under its words, shared by the hero
+   (hero.css) and the form beside it. */
+.sx {
+  /* Ends ~6rem above the screen's foot, so the next section's heading peeks in
+     (on screens taller than ~800px; shorter ones need the room for the form). */
+  --hx-h: max(38rem, calc(100svh - 13rem));
+  --hx-foot: var(--space-16);
+}
+
+/* Desktop: the form sits in the middle of the hero, top to bottom. The film
+   starts 1rem down (hero.css); --form-h is measured in Hero.tsx. Margin, not
+   padding, so the form still sticks at the top as the page scrolls. */
+@media (min-width: 1056px) {
+  .sx #apply {
+    margin-top: calc(var(--space-4) + max(var(--space-6), (var(--hx-h) - var(--form-h, 36rem)) / 2));
+    padding-top: 0;
+  }
+}
